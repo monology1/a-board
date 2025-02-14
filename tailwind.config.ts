@@ -8,31 +8,27 @@ export default {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        castoro: ['var(--font-castoro)', 'serif'],
+      },
       colors: {
-        primary: {
-          50: '#f3faf4',
-          100: '#e0f2e3',
-          200: '#bce0c2',
-          300: '#89c491',
-          400: '#53a460',  // Button color
-          500: '#2f734a',  // Base green
-          600: '#1f5c3d',  // Dark background
-          700: '#1a4a32',
-          800: '#163b29',
-          900: '#122e21',
+        // Main Colors
+        'green': {
+          100: '#EFF6F0',  // Green 100
+          300: '#4C7A55',  // Green 300
+          500: '#2A4834',  // Green 500 (Base color)
         },
-        secondary: {
-          50: '#ffffff',   // White input background
-          100: '#f8f9fa',
-          200: '#e9ecef',
-          300: '#dee2e6',
-          400: '#ced4da',
-          500: '#adb5bd',
-          600: '#6c757d',
-          700: '#495057',
-          800: '#343a40',
-          900: '#212529',
-        }
+        'golden': '#C8AA6E',  // Golden
+
+        // Base Colors
+        'custom-black': '#000000',  // Black
+        'custom-white': '#FFFFFF',  // White
+        'custom-text': '#111111',   // Text
+        'gray': {
+          100: '#D3D7D3',  // Grey 100
+          300: '#8C8C8C',  // Grey 300
+        },
+        'success': '#4CAF50'  // Success
       },
     },
   },
