@@ -1,5 +1,6 @@
 import {cookies} from "next/headers";
 import {redirect} from "next/navigation";
+import Link from "next/link";
 
 export default async function Home() {
     // Check if user is authenticated by looking for the token in cookies
@@ -34,10 +35,10 @@ export default async function Home() {
                     <h1 className="text-white font-castoro text-2xl mb-8">a Board</h1>
                     <ul className="space-y-4">
                         <li>
-                            <a href="/" className="text-white">Home</a>
+                            <Link href="/" className="text-white">Home</Link>
                         </li>
                         <li>
-                            <a href="/our-blog" className="text-white">Our Blog</a>
+                            <Link href="/our-blog" className="text-white">Our Blog</Link>
                         </li>
                     </ul>
                 </nav>

@@ -1,16 +1,21 @@
 import Image from "next/image";
 import LogoImage from "@/public/images/a-board.png"
-export const Logo = () => {
+
+interface LogoProps {
+    className?: string;
+}
+
+export const Logo = ({ className = '' }: LogoProps) => {
     return (
-        <div className="flex flex-col items-center space-y-2">
+        <div className={`text-center ${className}`}>
             <Image
                 src={LogoImage}
                 alt="a Board"
                 width={120}
                 height={120}
-                className="relative w-auto h-auto"
+                className="mx-auto mb-2"
             />
-            <span className="text-custom-white font-castoro text-xl">a Board</span>
+            <h2 className="text-white font-castoro text-xl">a Board</h2>
         </div>
-    )
+    );
 };
