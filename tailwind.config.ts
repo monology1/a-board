@@ -15,8 +15,8 @@ export default {
         // Main Colors
         'green': {
           100: '#EFF6F0',  // Green 100
-          300: '#4C7A55',  // Green 300
-          500: '#2A4834',  // Green 500 (Base color)
+          300: '#2B5F44',  // Green 300
+          500: '#243831',  // Green 500 (Base color)
         },
         'golden': '#C8AA6E',  // Golden
 
@@ -28,7 +28,7 @@ export default {
           100: '#D3D7D3',  // Grey 100
           300: '#8C8C8C',  // Grey 300
         },
-        'success': '#4CAF50'  // Success
+        'success': '#49A569'  // Success
       },
     },
   },

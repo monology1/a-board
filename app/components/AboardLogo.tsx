@@ -11,11 +11,9 @@ export const Logo = ({ className = '' }: LogoProps) => {
             <Image
                 src={LogoImage}
                 alt="a Board"
-                width={120}
-                height={120}
-                className="mx-auto mb-2"
+                className="mx-auto mb-2 md:max-w-[171.46px] max-w-[299.61px]"
             />
-            <h2 className="text-white font-castoro text-xl">a Board</h2>
+            <h2 className="text-white font-castoro text-[28px] italic">a Board</h2>
         </div>
     );
 };

@@ -38,7 +38,7 @@ body {
   }
 
   .btn-primary {
-    @apply w-full py-3 bg-green-300 text-custom-white rounded-md
+    @apply w-full py-3 bg-success text-custom-white rounded-md
     hover:bg-green-500 transition-colors focus:outline-none
     focus:ring-2 focus:ring-offset-2 focus:ring-green-300;
   }

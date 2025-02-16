@@ -21,7 +21,7 @@ export const SignIn = () => {
             />
             <button
                 type="submit"
-                className="w-full py-3 bg-green-300 text-white rounded-md"
+                className="w-full py-3 bg-success text-white rounded-md"
             >
                 Sign In
             </button>
