@@ -1,13 +1,37 @@
 'use client';
 
-import { useState } from 'react';
+import {useState} from 'react';
+import {ApiClient} from "@/api/client";
+import {API} from "@/constants/constants";
+
+interface LoginRequest {
+    username: string;
+}
+
+interface LoginResponse {
+    access_token: string
+    user: {
+        id: number,
+        username: string,
+        createdAt: string,
+        updatedAt: string
+    }
+}
 
 export const SignIn = () => {
     const [username, setUsername] = useState('');
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Handle sign in logic
+        const reqBody: LoginRequest = {
+            username: username
+        }
+        try {
+            const response: LoginResponse = await ApiClient.getInstance().post(API.signin, reqBody);
+            localStorage.setItem("userProfile", JSON.stringify(response.user));
+        } catch (error) {
+            console.error(error);
+        }
     };
 
     return (

@@ -1,4 +1,4 @@
-import axios, {AxiosInstance, AxiosResponse} from "axios";
+import axios, { AxiosInstance, AxiosResponse } from "axios";
 
 export class ApiClient {
     private static instance: ApiClient;
@@ -45,8 +45,8 @@ export class ApiClient {
     private async request<T>(
         method: string,
         url: string,
-        data?: never,
-        params?: never
+        data?: any, // Change `never` to `any` or a more specific type
+        params?: any // Change `never` to `any` or a more specific type
     ): Promise<T> {
         const response: AxiosResponse<T> = await this.api.request({
             method,
@@ -57,17 +57,16 @@ export class ApiClient {
         return response.data;
     }
 
-
     // API methods
-    async get<T>(url: string, params?: never): Promise<T> {
+    async get<T>(url: string, params?: any): Promise<T> {
         return this.request<T>('GET', url, undefined, params);
     }
 
-    async post<T>(url: string, data: never): Promise<T> {
+    async post<T>(url: string, data: any): Promise<T> {
         return this.request<T>('POST', url, data);
     }
 
-    async put<T>(url: string, data: never): Promise<T> {
+    async put<T>(url: string, data: any): Promise<T> {
         return this.request<T>('PUT', url, data);
     }
 

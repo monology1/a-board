@@ -168,6 +168,6 @@ export function useAuth() {
 ## Environment Variables
 
 ```env
-NEXT_PUBLIC_API_URL=http://localhost:4000
+NEXT_PUBLIC_API_URL=http://localhost:8081/api/v1
 NEXT_PUBLIC_ENV=development
 ```
