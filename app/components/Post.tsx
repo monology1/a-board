@@ -18,20 +18,38 @@ interface Post {
     updatedAt: string;
 }
 
+function highlightMatch(text: string, query: string) {
+    if (!query) return text; // no highlight if empty
+
+    const index = text.toLowerCase().indexOf(query.toLowerCase());
+    if (index === -1) return text; // no match, return original
+
+    const start = text.substring(0, index);
+    const match = text.substring(index, index + query.length);
+    const end = text.substring(index + query.length);
+
+    return (
+        <>
+            {start}
+            <span className="bg-yellow-200">{match}</span>
+            {end}
+        </>
+    );
+}
+
 export default function Post() {
     const [posts, setPosts] = useState<Post[]>([]);
     const [loading, setLoading] = useState(true);
 
     // State for filters
-    const [authorFilter, setAuthorFilter] = useState("");
+    const [titleFilter, setTitleFilter] = useState("");
     const [categoryFilter, setCategoryFilter] = useState("");
 
     const fetchPosts = async (author?: string, category?: string) => {
         setLoading(true);
-
         try {
             // Build query parameters
-            let url = API.posts; // e.g. "/api/v1/posts"
+            let url = API.posts;
             const params = new URLSearchParams();
 
             if (author) params.append("author", author);
@@ -57,16 +75,20 @@ export default function Post() {
         fetchPosts();
     }, []);
 
-    // Callback when user presses Enter in search bar
-    const handleSearch = (author: string) => {
-        setAuthorFilter(author);
-        fetchPosts(author, categoryFilter);
+    const handleSearch = (title: string) => {
+        if (title.length < 2) {
+            setTitleFilter("");
+            return;
+        }
+
+        setTitleFilter(title);
     };
+
 
     // Callback when user selects a category
     const handleCategoryChange = (category: string) => {
         setCategoryFilter(category);
-        fetchPosts(authorFilter, category);
+        fetchPosts(category);
     };
 
     if (loading) {
@@ -103,7 +125,9 @@ export default function Post() {
                         <div className="text-gray-500 text-xs my-3">{post.category}</div>
 
                         {/* Title */}
-                        <h2 className="text-black font-medium mb-2">{post.title}</h2>
+                        <h2 className="text-black font-medium mb-2">
+                            {highlightMatch(post.title, titleFilter)}
+                        </h2>
 
                         {/* Excerpt */}
                         <p className="text-sm text-black mb-2">{post.excerpt}</p>

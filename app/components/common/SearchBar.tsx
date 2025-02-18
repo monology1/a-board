@@ -1,7 +1,7 @@
 "use client";
 
 import { Search } from "@mui/icons-material";
-import { ChangeEvent, KeyboardEvent, useState } from "react";
+import { ChangeEvent, useState } from "react";
 
 interface SearchBarProps {
     onSearch: (author: string) => void;
@@ -11,13 +11,9 @@ export const SearchBar = ({ onSearch }: SearchBarProps) => {
     const [value, setValue] = useState("");
 
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-        setValue(e.target.value);
-    };
-
-    const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === "Enter") {
-            onSearch(value.trim());
-        }
+        const typedValue = e.target.value;
+        setValue(typedValue);
+        onSearch(typedValue.trim());
     };
 
     return (
@@ -31,7 +27,6 @@ export const SearchBar = ({ onSearch }: SearchBarProps) => {
                 className="w-full border border-green-100 bg-gray-100/50 rounded-md py-2 pl-10 pr-4 text-gray-700 placeholder-gray-500"
                 value={value}
                 onChange={handleChange}
-                onKeyDown={handleKeyDown}
             />
         </div>
     );
