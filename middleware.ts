@@ -14,6 +14,7 @@ export function middleware(request: NextRequest) {
     const protectedRoutes = [
         '/api/comments',
         '/api/posts',
+        '/api/comments'
         // Add other protected routes
     ];
 

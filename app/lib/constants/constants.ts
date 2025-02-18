@@ -1,5 +1,6 @@
 export const API = {
     signin: "/auth/signin",
     logout: "/auth/logout",
-    posts: "/posts"
+    posts: "/posts",
+    comments: "/comments"
 }
