@@ -1,9 +1,16 @@
 'use client';
 
-export const CreateButton = () => {
+interface CreateButtonProps {
+    onClick: () => void;
+}
+
+export function CreateButton({ onClick }: CreateButtonProps) {
     return (
-        <button className="bg-success hover:bg-success/90 text-white px-3 py-1.5 rounded text-sm">
-            Create+
+        <button
+            onClick={onClick}
+            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+        >
+            Create Post
         </button>
     );
-};
+}

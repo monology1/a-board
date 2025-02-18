@@ -8,6 +8,7 @@ import {ApiClient} from "@/api/client";
 import {API} from "@/constants/constants";
 import {useRouter} from "next/navigation";
 import {ChatBubbleOutlineRounded} from "@mui/icons-material";
+import {CreatePostModal} from "@/components/modals/CreatePostModal";
 
 interface Post {
     id: number;
@@ -41,6 +42,7 @@ function highlightMatch(text: string, query: string) {
 
 export default function Post() {
     const router = useRouter();
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
     const handleClick = (post: Post) => {
         // Navigate to /post/[id]
@@ -97,7 +99,7 @@ export default function Post() {
     // Callback when user selects a category
     const handleCategoryChange = (category: string) => {
         setCategoryFilter(category);
-        fetchPosts("",category);
+        fetchPosts("", category);
     };
 
     if (loading) {
@@ -112,14 +114,14 @@ export default function Post() {
                     <SearchBar onSearch={handleSearch}/>
                 </div>
                 <CommunityDropdown onCategorySelect={handleCategoryChange}/>
-                <CreateButton/>
+                <CreateButton onClick={() => setIsCreateModalOpen(true)}/>
             </div>
 
             {/* Main Content */}
             <div
                 className="bg-white flex-1 rounded-lg shadow-sm overflow-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                 {posts.map((post) => (
-                    <article key={post.id} className="p-4 border-b cursor-pointer"  onClick={() => handleClick(post)}>
+                    <article key={post.id} className="p-4 border-b cursor-pointer" onClick={() => handleClick(post)}>
                         {/* Author and Avatar */}
                         <div className="flex items-center space-x-2 mb-1">
                             <img
@@ -149,6 +151,14 @@ export default function Post() {
                     </article>
                 ))}
             </div>
+            {/* Create Post Modal */}
+            <CreatePostModal
+                isOpen={isCreateModalOpen}
+                onClose={() => setIsCreateModalOpen(false)}
+                onSuccess={() => {
+                    fetchPosts();
+                }}
+            />
         </div>
     );
 }
