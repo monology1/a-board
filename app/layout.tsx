@@ -1,10 +1,17 @@
 'use client';
 
 import "./globals.css";
+import {IBM_Plex_Sans_Thai} from 'next/font/google';
 import {castoro} from "@/app/lib/fonts";
 import {useState, useEffect} from "react";
 import {Topbar} from "@/layouts/Topbar";
 import {Sidebar} from "@/layouts/Sidebar";
+
+const ibmPlexSansThai = IBM_Plex_Sans_Thai({
+    weight: ['400', '500', '600'],
+    subsets: ['thai', 'latin'],
+    variable: '--font-ibm',
+});
 
 export default function RootLayout({
                                        children,
@@ -20,13 +27,13 @@ export default function RootLayout({
     }, []);
 
     // Filter out authentication pages
-    const isAuthPage = window.location.pathname.includes('/signin') ||
-        window.location.pathname.includes('/signup');
+    const isAuthPage = typeof window !== 'undefined' &&
+        (window.location.pathname.includes('/signin') || window.location.pathname.includes('/signup'));
 
     if (isAuthPage) {
         return (
-            <html lang="en" className={`${castoro.variable}`}>
-            <body className="font-castoro">
+            <html lang="en" className={`${castoro.variable} ${ibmPlexSansThai.variable}`}>
+            <body className="font-ibm">
             {children}
             </body>
             </html>
@@ -34,20 +41,21 @@ export default function RootLayout({
     }
 
     return (
-        <html lang="en" className={`${castoro.variable}`}>
-        <body className="font-castoro">
-        <div className="min-h-screen">
+        <html lang="en" className={`${castoro.variable} ${ibmPlexSansThai.variable}`}>
+        <body className="font-ibm bg-gray-100">
+        <div className="min-h-screen flex flex-col">
             <Topbar
                 onMenuClick={() => setSidebarOpen(true)}
                 isAuthenticated={isAuthenticated}
             />
 
-            <div className="flex h-[100dvh]">
+            <div className="flex flex-1 h-[calc(100vh-3.5rem)]">
                 <Sidebar
                     isOpen={isSidebarOpen}
-                    onClose={() => setSidebarOpen(false)}/>
+                    onClose={() => setSidebarOpen(false)}
+                />
 
-                <main className="flex-1 max-h-full bg-gray-100">
+                <main className="flex-1 overflow-hidden">
                     {children}
                 </main>
             </div>

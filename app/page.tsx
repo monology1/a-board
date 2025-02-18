@@ -68,7 +68,7 @@ export default async function Home() {
         <div className="max-w-3xl px-[25px] md:ml-[50px] h-screen flex flex-col">
             {/*header contain*/}
             {/*desktop version*/}
-            <div className="flex items-center space-x-4 my-4">
+            <div className="flex items-center gap-4 my-4">
                 <div className="flex-1 max-w-xl">
                     <SearchBar/>
                 </div>
@@ -78,39 +78,38 @@ export default async function Home() {
             {/*main contain*/}
             <div className="bg-white flex-1 rounded-lg shadow-sm overflow-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                 {posts.map((post) => (
-                    <article key={post.id} className="p-6 border-b last:border-b-0">
-                        <div className="flex items-start space-x-4">
-                            {/* Author Avatar */}
-                            <div className="flex-shrink-0">
-                                <img
-                                    src={`/api/placeholder/40/40`}
-                                    alt={post.author}
-                                    className="w-10 h-10 rounded-full"
-                                />
-                            </div>
+                    <article key={post.id} className="p-4">
+                        {/* Author and Avatar */}
+                        <div className="flex items-center space-x-2 mb-1">
+                            <img
+                                src="/images/avatar.png"
+                                alt={post.author}
+                                className="w-[31px] h-[31px] rounded-full"
+                            />
+                            <span className="text-sm text-gray-300">{post.author}</span>
+                        </div>
 
-                            {/* Post Content */}
-                            <div className="flex-1 min-w-0">
-                                {/* Category */}
-                                <p className="text-sm text-gray-500 mb-1">
-                                    {post.category}
-                                </p>
+                        {/* Category */}
+                        <div className="text-gray-500 text-xs my-3">
+                            {post.category}
+                        </div>
 
-                                {/* Title */}
-                                <h2 className="text-lg font-medium text-gray-900 mb-2">
-                                    {post.title}
-                                </h2>
+                        {/* Title */}
+                        <h2 className="text-black font-medium mb-2">
+                            {post.title}
+                        </h2>
 
-                                {/* Excerpt */}
-                                <p className="text-gray-700 text-sm mb-2">
-                                    {post.excerpt}
-                                </p>
+                        {/* Excerpt */}
+                        <p className="text-sm text-black mb-2">
+                            {post.excerpt}
+                        </p>
 
-                                {/* Comments count */}
-                                <div className="text-sm text-gray-500">
-                                    {post.commentsCount} Comments
-                                </div>
-                            </div>
+                        {/* Comments count */}
+                        <div className="flex items-center text-gray-300 text-xs">
+                            <svg viewBox="0 0 24 24" className="w-4 h-4 mr-1">
+                                <path fill="currentColor" d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
+                            </svg>
+                            {post.commentsCount} Comments
                         </div>
                     </article>
                 ))}

@@ -10,6 +10,7 @@ export default {
     extend: {
       fontFamily: {
         castoro: ['var(--font-castoro)', 'serif'],
+        ibm: ['IBM Plex Sans Thai', 'sans-serif'],
       },
       colors: {
         // Main Colors
