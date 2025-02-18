@@ -71,8 +71,25 @@ export default function Post({showOurBlogActions = false}: PostProps) {
             let url = API.posts;
             const params = new URLSearchParams();
 
+            const storedProfile = localStorage.getItem("userProfile");
+            if (!storedProfile) {
+                throw new Error("User profile not found in localStorage");
+            }
+            const userProfile = JSON.parse(storedProfile);
+            const authorId = userProfile.id; // Make sure this is a number or can be parsed as a number
+
             if (author) params.append("author", author);
             if (category) params.append("category", category);
+
+            if (showOurBlogActions) {
+                // Convert to a string that is definitely numeric
+                const numericAuthorId = Number(authorId);
+
+                // If it's not NaN, append it to the query as 'id'
+                if (!Number.isNaN(numericAuthorId)) {
+                    params.append("id", numericAuthorId.toString());
+                }
+            }
 
             if (params.toString()) {
                 url += `?${params.toString()}`;
