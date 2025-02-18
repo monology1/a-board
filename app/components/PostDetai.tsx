@@ -138,7 +138,12 @@ export default function PostDetail({post}: PostDetailProps) {
     };
 
     const handleClick = () => {
-        router.replace("/");
+        // Check if there's a history entry
+        if (window.history.length > 1) {
+            router.back();
+        } else {
+            router.replace("/");
+        }
     };
 
     return (

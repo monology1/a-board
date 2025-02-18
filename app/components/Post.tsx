@@ -7,7 +7,7 @@ import {CreateButton} from "@/components/common/CreateButton";
 import {ApiClient} from "@/api/client";
 import {API} from "@/constants/constants";
 import {useRouter} from "next/navigation";
-import {ChatBubbleOutlineRounded} from "@mui/icons-material";
+import {BorderColorOutlined, ChatBubbleOutlineRounded, DeleteOutlined, Edit} from "@mui/icons-material";
 import {CreatePostModal} from "@/components/modals/CreatePostModal";
 
 interface Post {
@@ -21,12 +21,14 @@ interface Post {
     updatedAt: string;
 }
 
+interface PostProps {
+    showOurBlogActions?: boolean;
+}
+
 function highlightMatch(text: string, query: string) {
-    if (!query) return text; // no highlight if empty
-
+    if (!query) return text;
     const index = text.toLowerCase().indexOf(query.toLowerCase());
-    if (index === -1) return text; // no match, return original
-
+    if (index === -1) return text;
     const start = text.substring(0, index);
     const match = text.substring(index, index + query.length);
     const end = text.substring(index + query.length);
@@ -40,26 +42,20 @@ function highlightMatch(text: string, query: string) {
     );
 }
 
-export default function Post() {
+export default function Post({showOurBlogActions = false}: PostProps) {
     const router = useRouter();
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-
-    const handleClick = (post: Post) => {
-        // Navigate to /post/[id]
-        router.push(`/post/${post.id}`);
-    };
 
     const [posts, setPosts] = useState<Post[]>([]);
     const [loading, setLoading] = useState(true);
 
-    // State for filters
+    // Filters
     const [titleFilter, setTitleFilter] = useState("");
     const [categoryFilter, setCategoryFilter] = useState("");
 
     const fetchPosts = async (author?: string, category?: string) => {
         setLoading(true);
         try {
-            // Build query parameters
             let url = API.posts;
             const params = new URLSearchParams();
 
@@ -70,10 +66,12 @@ export default function Post() {
                 url += `?${params.toString()}`;
             }
 
-            // Fetch from your API
-            const response: any = await ApiClient.getInstance().get(url);
+            const api = ApiClient.getInstance();
+            // If using Axios:
+            // const { data } = await api.get<Post[]>(url);
+            // setPosts(data);
+            const response: any = await api.get(url);
             setPosts(response);
-            console.log("Posts fetched successfully");
         } catch (error) {
             console.error("Error fetching posts:", error);
         } finally {
@@ -81,7 +79,6 @@ export default function Post() {
         }
     };
 
-    // Initial fetch on mount
     useEffect(() => {
         fetchPosts();
     }, []);
@@ -91,15 +88,29 @@ export default function Post() {
             setTitleFilter("");
             return;
         }
-
         setTitleFilter(title);
     };
 
-
-    // Callback when user selects a category
     const handleCategoryChange = (category: string) => {
         setCategoryFilter(category);
         fetchPosts("", category);
+    };
+
+    const handleClick = (post: Post) => {
+        router.push(`/post/${post.id}`);
+    };
+
+    // (Optional) If you want to show edit/delete in “Our Blog”:
+    const handleEdit = (post: Post, e: React.MouseEvent) => {
+        e.stopPropagation();
+        console.log("Edit post:", post.id);
+        // Possibly navigate to an edit page, or open a modal, etc.
+    };
+
+    const handleDelete = (post: Post, e: React.MouseEvent) => {
+        e.stopPropagation();
+        console.log("Delete post:", post.id);
+        // Call your delete API, then refetch
     };
 
     if (loading) {
@@ -119,9 +130,24 @@ export default function Post() {
 
             {/* Main Content */}
             <div
-                className="bg-white flex-1 rounded-lg shadow-sm overflow-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                className="bg-white flex-1 rounded-lg shadow-sm overflow-auto
+                   [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+            >
                 {posts.map((post) => (
-                    <article key={post.id} className="p-4 border-b cursor-pointer" onClick={() => handleClick(post)}>
+                    <article
+                        key={post.id}
+                        className="p-4 border-b cursor-pointer"
+                        onClick={() => handleClick(post)}
+                    >
+                        {/* Conditionally show Edit/Delete if showAdminActions = true */}
+                        {showOurBlogActions && (
+                            <div className="flex justify-end items-center space-x-2">
+                                <BorderColorOutlined className="text-green-300"
+                                                     onClick={(e) => handleEdit(post, e)}/>
+                                <DeleteOutlined className="text-green-300"
+                                                onClick={(e) => handleDelete(post, e)}/>
+                            </div>
+                        )}
                         {/* Author and Avatar */}
                         <div className="flex items-center space-x-2 mb-1">
                             <img
@@ -143,14 +169,17 @@ export default function Post() {
                         {/* Excerpt */}
                         <p className="text-sm text-black mb-2">{post.excerpt}</p>
 
-                        {/* Comments count */}
-                        <div className="flex items-center text-gray-300">
-                            <ChatBubbleOutlineRounded className="mr-2"/>
-                            {post.commentsCount} Comments
+                        {/* Comments */}
+                        <div className="flex items-center justify-between text-gray-300">
+                            <div className="flex items-center">
+                                <ChatBubbleOutlineRounded className="mr-2"/>
+                                {post.commentsCount} Comments
+                            </div>
                         </div>
                     </article>
                 ))}
             </div>
+
             {/* Create Post Modal */}
             <CreatePostModal
                 isOpen={isCreateModalOpen}
