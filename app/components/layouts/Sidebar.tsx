@@ -28,7 +28,7 @@ export const Sidebar = ({isOpen, onClose}: {
 
             {/* Mobile Sidebar */}
                 <nav className={`
-                    md:hidden fixed top-0 left-[95px] h-full w-10/12 bg-green-500 z-50
+                    md:hidden fixed top-0 left-[95px] h-full w-10/12 bg-green-500 z-[100]
                     transform transition-transform duration-200 ease-in-out rounded-bl-[12px] rounded-tl-[12px]
                     ${isOpen ? 'translate-x-0' : 'translate-x-full'}
                 `}>
@@ -84,28 +84,44 @@ export const Sidebar = ({isOpen, onClose}: {
 
             {/* Desktop Sidebar */}
             <nav className="hidden md:block static w-[280px] bg-gray-100 p-[32px]">
-                <div className="space-y-4">
-                    {/* Navigation Links - Desktop */}
-                    <ul className="space-y-2">
-                        <li>
-                            <Link
-                                href="/"
-                                className="flex items-center space-x-2 text-gray-700 hover:text-gray-900"
-                            >
-                                <HomeOutlined className="h-4 w-4"/>
-                                <span>Home</span>
-                            </Link>
-                        </li>
-                        <li>
-                            <Link
-                                href="/our-blog"
-                                className="flex items-center space-x-2 text-gray-700 hover:text-gray-900"
-                            >
-                                <ArticleOutlined className="h-4 w-4"/>
-                                <span>Our Blog</span>
-                            </Link>
-                        </li>
-                    </ul>
+                <div className="h-full flex flex-col justify-between">
+                    <div className="space-y-4">
+                        {/* Navigation Links - Desktop */}
+                        <ul className="space-y-2">
+                            <li>
+                                <Link
+                                    href="/"
+                                    className="flex items-center space-x-2 text-gray-700 hover:text-gray-900"
+                                >
+                                    <HomeOutlined className="h-4 w-4"/>
+                                    <span>Home</span>
+                                </Link>
+                            </li>
+                            <li>
+                                <Link
+                                    href="/our-blog"
+                                    className="flex items-center space-x-2 text-gray-700 hover:text-gray-900"
+                                >
+                                    <ArticleOutlined className="h-4 w-4"/>
+                                    <span>Our Blog</span>
+                                </Link>
+                            </li>
+                        </ul>
+                    </div>
+                    {/* Logout button for desktop */}
+                    <div>
+                        <button
+                            onClick={() => {
+                                localStorage.removeItem('userProfile');
+                                logout()
+                                window.location.href = '/signin';
+                            }}
+                            className="flex items-center space-x-2 text-gray-700 hover:text-gray-900"
+                        >
+                            <LogoutOutlined className="h-4 w-4"/>
+                            <span>Logout</span>
+                        </button>
+                    </div>
                 </div>
             </nav>
         </>
