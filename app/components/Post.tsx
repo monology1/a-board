@@ -6,6 +6,7 @@ import {CommunityDropdown} from "@/components/common/CommunityDropdown";
 import {CreateButton} from "@/components/common/CreateButton";
 import {ApiClient} from "@/api/client";
 import {API} from "@/constants/constants";
+import {useRouter} from "next/navigation";
 
 interface Post {
     id: number;
@@ -38,6 +39,13 @@ function highlightMatch(text: string, query: string) {
 }
 
 export default function Post() {
+    const router = useRouter();
+
+    const handleClick = (post: Post) => {
+        // Navigate to /post/[id]
+        router.push(`/post/${post.id}`);
+    };
+
     const [posts, setPosts] = useState<Post[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -96,13 +104,13 @@ export default function Post() {
     }
 
     return (
-        <div className="max-w-3xl px-[25px] md:ml-[50px] h-screen flex flex-col">
+        <div className="max-w-7xl px-[25px] md:ml-[50px] h-screen flex flex-col">
             {/* Header */}
             <div className="flex items-center gap-4 my-4">
-                <div className="flex-1 max-w-xl">
-                    <SearchBar onSearch={handleSearch} />
+                <div className="flex-1">
+                    <SearchBar onSearch={handleSearch}/>
                 </div>
-                <CommunityDropdown onCategorySelect={handleCategoryChange} />
+                <CommunityDropdown onCategorySelect={handleCategoryChange}/>
                 <CreateButton/>
             </div>
 
@@ -110,7 +118,7 @@ export default function Post() {
             <div
                 className="bg-white flex-1 rounded-lg shadow-sm overflow-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                 {posts.map((post) => (
-                    <article key={post.id} className="p-4">
+                    <article key={post.id} className="p-4 border-b cursor-pointer"  onClick={() => handleClick(post)}>
                         {/* Author and Avatar */}
                         <div className="flex items-center space-x-2 mb-1">
                             <img
