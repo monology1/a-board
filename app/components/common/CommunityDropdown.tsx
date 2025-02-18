@@ -1,27 +1,38 @@
-'use client';
+"use client";
 
-import {useState} from 'react';
-import {Check, KeyboardArrowDown} from "@mui/icons-material";
+import { useState } from "react";
+import { Check, KeyboardArrowDown } from "@mui/icons-material";
 
 interface Category {
     id: string;
     name: string;
 }
 
-export const CommunityDropdown = () => {
+interface CommunityDropdownProps {
+    onCategorySelect: (category: string) => void;
+}
+
+export const CommunityDropdown = ({ onCategorySelect }: CommunityDropdownProps) => {
     const [isOpen, setIsOpen] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
     const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
 
     const categories: Category[] = [
-        {id: 'history', name: 'History'},
-        {id: 'food', name: 'Food'},
-        {id: 'pets', name: 'Pets'},
-        {id: 'health', name: 'Health'},
-        {id: 'fashion', name: 'Fashion'},
-        {id: 'exercise', name: 'Exercise'},
-        {id: 'others', name: 'Others'},
+        { id: "history", name: "History" },
+        { id: "food", name: "Food" },
+        { id: "pets", name: "Pets" },
+        { id: "health", name: "Health" },
+        { id: "fashion", name: "Fashion" },
+        { id: "exercise", name: "Exercise" },
+        { id: "others", name: "Others" },
     ];
+
+    const handleSelect = (categoryId: string) => {
+        setSelectedCategory(categoryId);
+        setIsOpen(false);
+        // Notify the parent about the new category
+        onCategorySelect(categoryId);
+    };
 
     return (
         <>
@@ -39,7 +50,7 @@ export const CommunityDropdown = () => {
                     className="flex items-center space-x-1 text-black text-sm"
                 >
                     <span>Community</span>
-                    <KeyboardArrowDown/>
+                    <KeyboardArrowDown />
                 </button>
 
                 {isOpen && (
@@ -48,16 +59,13 @@ export const CommunityDropdown = () => {
                             <button
                                 key={category.id}
                                 className="flex justify-between w-full items-center text-left px-4 py-2 text-sm text-black hover:bg-green-100"
-                                onClick={() => {
-                                    setSelectedCategory(category.id);
-                                    setIsOpen(false);
-                                }}
+                                onClick={() => handleSelect(category.id)}
                                 onMouseEnter={() => setHoveredCategory(category.id)}
                                 onMouseLeave={() => setHoveredCategory(null)}
                             >
                                 {category.name}
                                 {(selectedCategory === category.id || hoveredCategory === category.id) && (
-                                    <Check className="h-[20px] w-[20px] text-green-500"/>
+                                    <Check className="h-[20px] w-[20px] text-green-500" />
                                 )}
                             </button>
                         ))}

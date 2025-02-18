@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { SearchBar } from "@/components/common/SearchBar";
-import { CommunityDropdown } from "@/components/common/CommunityDropdown";
-import { CreateButton } from "@/components/common/CreateButton";
-import { ApiClient } from "@/api/client";
-import { API } from "@/constants/constants";
+import {useEffect, useState} from "react";
+import {SearchBar} from "@/components/common/SearchBar";
+import {CommunityDropdown} from "@/components/common/CommunityDropdown";
+import {CreateButton} from "@/components/common/CreateButton";
+import {ApiClient} from "@/api/client";
+import {API} from "@/constants/constants";
 
 interface Post {
     id: number;
@@ -22,22 +22,52 @@ export default function Post() {
     const [posts, setPosts] = useState<Post[]>([]);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        async function fetchPosts() {
-            try {
-                // Call your API endpoint to fetch posts.
-                const response: any = await ApiClient.getInstance().get(API.posts);
-                // Assuming the API returns an object with a "posts" property that is an array.
-                setPosts(response);
-                console.log("Posts fetched successfully");
-            } catch (error) {
-                console.error("Error fetching posts:", error);
-            } finally {
-                setLoading(false);
+    // State for filters
+    const [authorFilter, setAuthorFilter] = useState("");
+    const [categoryFilter, setCategoryFilter] = useState("");
+
+    const fetchPosts = async (author?: string, category?: string) => {
+        setLoading(true);
+
+        try {
+            // Build query parameters
+            let url = API.posts; // e.g. "/api/v1/posts"
+            const params = new URLSearchParams();
+
+            if (author) params.append("author", author);
+            if (category) params.append("category", category);
+
+            if (params.toString()) {
+                url += `?${params.toString()}`;
             }
+
+            // Fetch from your API
+            const response: any = await ApiClient.getInstance().get(url);
+            setPosts(response);
+            console.log("Posts fetched successfully");
+        } catch (error) {
+            console.error("Error fetching posts:", error);
+        } finally {
+            setLoading(false);
         }
+    };
+
+    // Initial fetch on mount
+    useEffect(() => {
         fetchPosts();
     }, []);
+
+    // Callback when user presses Enter in search bar
+    const handleSearch = (author: string) => {
+        setAuthorFilter(author);
+        fetchPosts(author, categoryFilter);
+    };
+
+    // Callback when user selects a category
+    const handleCategoryChange = (category: string) => {
+        setCategoryFilter(category);
+        fetchPosts(authorFilter, category);
+    };
 
     if (loading) {
         return <div>Loading...</div>;
@@ -48,14 +78,15 @@ export default function Post() {
             {/* Header */}
             <div className="flex items-center gap-4 my-4">
                 <div className="flex-1 max-w-xl">
-                    <SearchBar />
+                    <SearchBar onSearch={handleSearch} />
                 </div>
-                <CommunityDropdown />
-                <CreateButton />
+                <CommunityDropdown onCategorySelect={handleCategoryChange} />
+                <CreateButton/>
             </div>
 
             {/* Main Content */}
-            <div className="bg-white flex-1 rounded-lg shadow-sm overflow-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+            <div
+                className="bg-white flex-1 rounded-lg shadow-sm overflow-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                 {posts.map((post) => (
                     <article key={post.id} className="p-4">
                         {/* Author and Avatar */}
