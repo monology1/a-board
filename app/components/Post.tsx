@@ -7,6 +7,7 @@ import {CreateButton} from "@/components/common/CreateButton";
 import {ApiClient} from "@/api/client";
 import {API} from "@/constants/constants";
 import {useRouter} from "next/navigation";
+import {ChatBubbleOutlineRounded} from "@mui/icons-material";
 
 interface Post {
     id: number;
@@ -96,7 +97,7 @@ export default function Post() {
     // Callback when user selects a category
     const handleCategoryChange = (category: string) => {
         setCategoryFilter(category);
-        fetchPosts(category);
+        fetchPosts("",category);
     };
 
     if (loading) {
@@ -141,13 +142,8 @@ export default function Post() {
                         <p className="text-sm text-black mb-2">{post.excerpt}</p>
 
                         {/* Comments count */}
-                        <div className="flex items-center text-gray-300 text-xs">
-                            <svg viewBox="0 0 24 24" className="w-4 h-4 mr-1">
-                                <path
-                                    fill="currentColor"
-                                    d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"
-                                />
-                            </svg>
+                        <div className="flex items-center text-gray-300">
+                            <ChatBubbleOutlineRounded className="mr-2"/>
                             {post.commentsCount} Comments
                         </div>
                     </article>

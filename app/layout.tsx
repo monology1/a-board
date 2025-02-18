@@ -6,6 +6,7 @@ import {castoro} from "@/app/lib/fonts";
 import {useState, useEffect} from "react";
 import {Topbar} from "@/layouts/Topbar";
 import {Sidebar} from "@/layouts/Sidebar";
+import { usePathname } from 'next/navigation';
 
 const ibmPlexSansThai = IBM_Plex_Sans_Thai({
     weight: ['400', '500', '600'],
@@ -20,29 +21,32 @@ export default function RootLayout({
 }>) {
     const [isSidebarOpen, setSidebarOpen] = useState(false);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const pathname = usePathname();
 
     useEffect(() => {
         const userProfile = localStorage.getItem('userProfile');
         setIsAuthenticated(!!userProfile);
     }, []);
 
-    // Filter out authentication pages
-    const isAuthPage = typeof window !== 'undefined' &&
-        (window.location.pathname.includes('/signin') || window.location.pathname.includes('/signup'));
+    // Check if current path is /signin
+    const isSignInPage = pathname === '/signin';
 
-    if (isAuthPage) {
-        return (
-            <html lang="en" className={`${castoro.variable} ${ibmPlexSansThai.variable}`}>
-            <body className="font-ibm">
-            {children}
-            </body>
-            </html>
-        );
+    // Base HTML structure
+    const baseHtml = (content: React.ReactNode) => (
+        <html lang="en" className={`${castoro.variable} ${ibmPlexSansThai.variable}`}>
+        <body className={`font-ibm ${!isSignInPage ? 'bg-gray-100' : ''}`}>
+        {content}
+        </body>
+        </html>
+    );
+
+    // Return simple layout for signin page
+    if (isSignInPage) {
+        return baseHtml(children);
     }
 
-    return (
-        <html lang="en" className={`${castoro.variable} ${ibmPlexSansThai.variable}`}>
-        <body className="font-ibm bg-gray-100">
+    // Return full layout for other pages
+    return baseHtml(
         <div className="min-h-screen flex flex-col">
             <Topbar
                 onMenuClick={() => setSidebarOpen(true)}
@@ -60,7 +64,5 @@ export default function RootLayout({
                 </main>
             </div>
         </div>
-        </body>
-        </html>
     );
 }

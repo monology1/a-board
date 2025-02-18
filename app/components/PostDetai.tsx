@@ -1,7 +1,22 @@
 "use client";
 
-import {useState} from "react";
-import {ArrowBack} from "@mui/icons-material";
+import {useEffect, useState} from "react";
+import {
+    ArrowBack,
+    ChatBubble,
+    ChatBubbleOutlined,
+    ChatBubbleOutlineRounded,
+    CommentOutlined
+} from "@mui/icons-material";
+import {useRouter} from "next/navigation";
+import {CloseIcon} from "next/dist/client/components/react-dev-overlay/internal/icons/CloseIcon";
+
+interface UserProfile {
+    id: number;
+    name: string;
+    updatedAt: Date;
+    createdAt: Date;
+}
 
 interface Comment {
     id: number;
@@ -29,12 +44,40 @@ type PostDetailProps = {
 };
 
 export default function PostDetail({post}: PostDetailProps) {
-    // Example: local state for "Add Comment" or any other client-side interaction
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const [commentText, setCommentText] = useState("");
+    const router = useRouter();
+    const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-    const handleAddComment = () => {
-        // Example: you'd call your API to add a new comment, then update the UI
-        console.log("Add comment:", commentText);
+    useEffect(() => {
+        // Check authentication from cookies
+        const token = document.cookie.split('; ').find(row => row.startsWith('access_token='));
+        setIsAuthenticated(!!token);
+
+        // Get user profile from localStorage
+        const storedProfile = localStorage.getItem('userProfile');
+        if (storedProfile) {
+            setUserProfile(JSON.parse(storedProfile));
+        }
+    }, []);
+
+    const handleAddComment = async () => {
+        if (!isAuthenticated) {
+            // Redirect to login or show login modal
+            console.log("Please login first");
+            return;
+        }
+        if (!commentText.trim()) return;
+
+        try {
+            // API call would go here
+            console.log("Adding comment:", commentText);
+            setCommentText("");
+            setIsModalOpen(false);
+        } catch (error) {
+            console.error("Error adding comment:", error);
+        }
     };
 
     const formatTimeAgo = (date: string) => {
@@ -65,12 +108,17 @@ export default function PostDetail({post}: PostDetailProps) {
         }
     };
 
+    const handleClick = () => {
+        // Navigate to /post/[id]
+        router.replace("/");
+    };
+
     return (
         <div className="flex flex-col h-full bg-white">
             {/* Header */}
             <div className="flex items-center p-4">
-                <div className="flex items-center justify-center rounded-full w-[44px] h-[44px] bg-green-100">
-                    <ArrowBack className="text-gray-600"/>
+                <div className="flex items-center justify-center rounded-full w-[44px] h-[44px] bg-green-100 cursor-pointer">
+                    <ArrowBack className="text-gray-600" onClick={() => handleClick()}/>
                 </div>
             </div>
 
@@ -104,12 +152,15 @@ export default function PostDetail({post}: PostDetailProps) {
                 {/* Comments Section */}
                 <div className="space-y-6">
                     <div className="flex items-center">
-                        <span className="text-sm text-gray-500">{post.commentsCount} Comments</span>
+                        <span
+                            className="text-sm text-gray-500"><ChatBubbleOutlineRounded/> {post.commentsCount} Comments</span>
                     </div>
 
                     <div className="flex items-center">
                         <button
-                            className="px-4 py-1 text-sm text-green-600 border border-green-600 rounded-[8px] w-[132px] h-[40px] hover:bg-green-50">
+                            onClick={() => isAuthenticated ? setIsModalOpen(true) : console.log('Please login first')}
+                            className="px-4 py-1 text-sm text-green-600 border border-green-600 rounded-[8px] w-[132px] h-[40px] hover:bg-green-50"
+                        >
                             Add Comments
                         </button>
                     </div>
@@ -132,6 +183,41 @@ export default function PostDetail({post}: PostDetailProps) {
                     </div>
                 </div>
             </div>
+            {/* Comment Modal */}
+            {isModalOpen && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                    <div className="bg-white rounded-lg w-full max-w-lg mx-4">
+                        <div className="flex justify-between items-center p-4 border-b">
+                            <h2 className="text-lg font-semibold">Add Comments</h2>
+                            <button onClick={() => setIsModalOpen(false)} className="text-gray-500">
+                                <CloseIcon />
+                            </button>
+                        </div>
+                        <div className="p-4">
+                            <textarea
+                                value={commentText}
+                                onChange={(e) => setCommentText(e.target.value)}
+                                placeholder="What's on your mind..."
+                                className="w-full h-32 p-3 border rounded-lg resize-none focus:outline-none focus:border-green-500"
+                            />
+                            <div className="flex justify-end space-x-3 mt-4">
+                                <button
+                                    onClick={() => setIsModalOpen(false)}
+                                    className="px-4 py-2 text-gray-600 hover:text-gray-800"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={handleAddComment}
+                                    className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+                                >
+                                    Post
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
