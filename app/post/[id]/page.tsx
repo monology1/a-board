@@ -25,7 +25,7 @@ export default async function PostPage({params}: PostPageProps) {
 
     // Pass the post data to your client component
     return (
-        <div className="min-h-screen flex flex-col">
+        <div className="min-h-screen h-full flex flex-col">
             <PostDetail post={post}/>
         </div>
     );
