@@ -1,51 +1,120 @@
-import {cookies} from "next/headers";
-import {redirect} from "next/navigation";
-import Link from "next/link";
+import {SearchBar} from "@/components/common/SearchBar";
+import {CommunityDropdown} from "@/components/common/CommunityDropdown";
+import {CreateButton} from "@/components/common/CreateButton";
+
+interface Post {
+    id: number;
+    author: string;
+    category: string;
+    title: string;
+    excerpt: string;
+    commentsCount: number;
+}
 
 export default async function Home() {
-    // Check if user is authenticated by looking for the token in cookies
-    const cookieStore = await cookies();
-    const token = cookieStore.get('token');
+    // This would typically come from an API
+    const posts: Post[] = [
+        {
+            id: 1,
+            author: "Writesel",
+            category: "History",
+            title: "The Beginning of the End of the World",
+            excerpt: "The afterlife vision The Good Place comes to its culmination, the show's two protagonists, Eleanor and Chidi, contemplate their future, having lived thousands upon thousands of lifetimes together, and having experienced virtually everything this life has to offe...",
+            commentsCount: 32
+        },
+        {
+            id: 2,
+            author: "Zach",
+            category: "History",
+            title: "The Big Short War",
+            excerpt: "The afterlife, beforetime and certain eyes, he was the kind of hyper-ambitious kid other kids tend to hate and just the type to make the school more difficult for everyone. But on the night before the L.A.P.D, his father took pity on him and cancelled the trip. \"You'll ne...",
+            commentsCount: 14
+        },
+        {
+            id: 3,
+            author: "Nicholas",
+            category: "Exercise",
+            title: "The Mental Health Benefits of Exercise",
+            excerpt: "You already know that exercise is good for your body. But did you know it can also boost your mood, improve your sleep, and help you deal with depression, anxiety, stress, and more?",
+            commentsCount: 32
+        },
+        {
+            id: 4,
+            author: "Nicholas",
+            category: "Exercise",
+            title: "The Mental Health Benefits of Exercise",
+            excerpt: "You already know that exercise is good for your body. But did you know it can also boost your mood, improve your sleep, and help you deal with depression, anxiety, stress, and more?",
+            commentsCount: 32
+        },
+        {
+            id: 5,
+            author: "Nicholas",
+            category: "Exercise",
+            title: "The Mental Health Benefits of Exercise",
+            excerpt: "You already know that exercise is good for your body. But did you know it can also boost your mood, improve your sleep, and help you deal with depression, anxiety, stress, and more?",
+            commentsCount: 32
+        },
+        {
+            id: 6,
+            author: "Nicholas",
+            category: "Exercise",
+            title: "The Mental Health Benefits of Exercise",
+            excerpt: "You already know that exercise is good for your body. But did you know it can also boost your mood, improve your sleep, and help you deal with depression, anxiety, stress, and more?",
+            commentsCount: 32
+        }
+    ];
 
-    // If no token found, redirect to signin page
-    if (!token) {
-        redirect('/signin');
-    }
-
-    // If authenticated, show the home page content
     return (
-        <main className="min-h-screen bg-green-500">
-            {/* Mobile view */}
-            <div className="md:hidden">
-                <header className="p-4 bg-green-500 flex justify-between items-center">
-                    <h1 className="text-white font-castoro">a Board</h1>
-                    <button className="text-white">
-                        <span className="sr-only">Menu</span>
-                        {/* Menu icon */}
-                    </button>
-                </header>
-                <div className="bg-white min-h-screen p-4">
-                    {/* Post list for mobile */}
+        <div className="max-w-3xl px-[25px] md:ml-[50px] h-screen flex flex-col">
+            {/*header contain*/}
+            {/*desktop version*/}
+            <div className="flex items-center space-x-4 my-4">
+                <div className="flex-1 max-w-xl">
+                    <SearchBar/>
                 </div>
+                <CommunityDropdown/>
+                <CreateButton/>
             </div>
+            {/*main contain*/}
+            <div className="bg-white flex-1 rounded-lg shadow-sm overflow-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                {posts.map((post) => (
+                    <article key={post.id} className="p-6 border-b last:border-b-0">
+                        <div className="flex items-start space-x-4">
+                            {/* Author Avatar */}
+                            <div className="flex-shrink-0">
+                                <img
+                                    src={`/api/placeholder/40/40`}
+                                    alt={post.author}
+                                    className="w-10 h-10 rounded-full"
+                                />
+                            </div>
 
-            {/* Desktop view */}
-            <div className="hidden md:flex min-h-screen">
-                <nav className="w-64 bg-green-500 p-4 fixed h-full">
-                    <h1 className="text-white font-castoro text-2xl mb-8">a Board</h1>
-                    <ul className="space-y-4">
-                        <li>
-                            <Link href="/" className="text-white">Home</Link>
-                        </li>
-                        <li>
-                            <Link href="/our-blog" className="text-white">Our Blog</Link>
-                        </li>
-                    </ul>
-                </nav>
-                <main className="ml-64 flex-1 bg-white p-8">
-                    {/* Post list for desktop */}
-                </main>
+                            {/* Post Content */}
+                            <div className="flex-1 min-w-0">
+                                {/* Category */}
+                                <p className="text-sm text-gray-500 mb-1">
+                                    {post.category}
+                                </p>
+
+                                {/* Title */}
+                                <h2 className="text-lg font-medium text-gray-900 mb-2">
+                                    {post.title}
+                                </h2>
+
+                                {/* Excerpt */}
+                                <p className="text-gray-700 text-sm mb-2">
+                                    {post.excerpt}
+                                </p>
+
+                                {/* Comments count */}
+                                <div className="text-sm text-gray-500">
+                                    {post.commentsCount} Comments
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                ))}
             </div>
-        </main>
+        </div>
     );
 }

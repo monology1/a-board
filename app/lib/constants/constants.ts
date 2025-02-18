@@ -1,3 +1,4 @@
 export const API = {
-    signin: "/auth/signin"
+    signin: "/auth/signin",
+    logout: "/auth/logout"
 }

@@ -10,14 +10,11 @@ export class ApiClient {
             headers: {
                 'Content-Type': 'application/json',
             },
+            withCredentials: true
         });
 
         this.api.interceptors.request.use(
             (config) => {
-                const token = localStorage.getItem('token');
-                if (token) {
-                    config.headers.Authorization = `Bearer ${token}`;
-                }
                 return config;
             },
             (error) => Promise.reject(error)
@@ -27,7 +24,8 @@ export class ApiClient {
             (response) => response,
             async (error) => {
                 if (error.response?.status === 401) {
-                    // Handle token refresh or logout
+                    localStorage.removeItem('userProfile');
+                    window.location.href = '/signin';
                 }
                 return Promise.reject(error);
             }

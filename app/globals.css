@@ -44,3 +44,7 @@ body {
   }
 }
 
+.bg-base{
+  @apply bg-gray-100
+}
+

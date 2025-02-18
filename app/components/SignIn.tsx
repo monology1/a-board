@@ -3,6 +3,7 @@
 import {useState} from 'react';
 import {ApiClient} from "@/api/client";
 import {API} from "@/constants/constants";
+import {redirect, useRouter} from "next/navigation";
 
 interface LoginRequest {
     username: string;
@@ -20,6 +21,7 @@ interface LoginResponse {
 
 export const SignIn = () => {
     const [username, setUsername] = useState('');
+    const router = useRouter();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -29,6 +31,8 @@ export const SignIn = () => {
         try {
             const response: LoginResponse = await ApiClient.getInstance().post(API.signin, reqBody);
             localStorage.setItem("userProfile", JSON.stringify(response.user));
+            console.log("login success")
+            router.push("/");
         } catch (error) {
             console.error(error);
         }
