@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Check, KeyboardArrowDown } from "@mui/icons-material";
 
 interface Category {
@@ -10,12 +10,19 @@ interface Category {
 
 interface CreatePostCommunityDropdownProps {
     onCategorySelect: (category: string) => void;
+    /** Optional initial value to show in the dropdown */
+    initialCategory?: string;
 }
 
-export const CreatePostCommunityDropdown = ({ onCategorySelect }: CreatePostCommunityDropdownProps) => {
+export const CreatePostCommunityDropdown = ({ onCategorySelect, initialCategory }: CreatePostCommunityDropdownProps) => {
     const [isOpen, setIsOpen] = useState(false);
-    const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+    const [selectedCategory, setSelectedCategory] = useState<string | null>(initialCategory || null);
     const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
+
+    useEffect(() => {
+        // When the initialCategory prop changes, update the selectedCategory state.
+        setSelectedCategory(initialCategory || null);
+    }, [initialCategory]);
 
     const categories: Category[] = [
         { id: "history", name: "History" },
@@ -39,12 +46,11 @@ export const CreatePostCommunityDropdown = ({ onCategorySelect }: CreatePostComm
                 onClick={() => setIsOpen(!isOpen)}
                 className="w-full px-4 py-2 text-center text-success border border-success rounded-lg flex justify-center items-center"
             >
-                <span>
-                    {selectedCategory ?
-                        categories.find(cat => cat.id === selectedCategory)?.name :
-                        'Choose a community'
-                    }
-                </span>
+        <span>
+          {selectedCategory
+              ? categories.find(cat => cat.id === selectedCategory)?.name
+              : 'Choose a community'}
+        </span>
                 <KeyboardArrowDown />
             </button>
 

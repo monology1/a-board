@@ -7,8 +7,9 @@ import {CreateButton} from "@/components/common/CreateButton";
 import {ApiClient} from "@/api/client";
 import {API} from "@/constants/constants";
 import {useRouter} from "next/navigation";
-import {BorderColorOutlined, ChatBubbleOutlineRounded, DeleteOutlined, Edit} from "@mui/icons-material";
-import {CreatePostModal} from "@/components/modals/CreatePostModal";
+import {BorderColorOutlined, ChatBubbleOutlineRounded, DeleteOutlined} from "@mui/icons-material";
+import {PostModal} from "@/components/modals/PostModal";
+import {PostType} from "@/app/types/post";
 
 interface Post {
     id: number;
@@ -45,6 +46,8 @@ function highlightMatch(text: string, query: string) {
 export default function Post({showOurBlogActions = false}: PostProps) {
     const router = useRouter();
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [postToEdit, setPostToEdit] = useState<PostType | null>(null);
 
     const [posts, setPosts] = useState<Post[]>([]);
     const [loading, setLoading] = useState(true);
@@ -101,11 +104,13 @@ export default function Post({showOurBlogActions = false}: PostProps) {
     };
 
     // (Optional) If you want to show edit/delete in “Our Blog”:
-    const handleEdit = (post: Post, e: React.MouseEvent) => {
+    const handleEdit = (post: PostType, e: React.MouseEvent) => {
         e.stopPropagation();
         console.log("Edit post:", post.id);
-        // Possibly navigate to an edit page, or open a modal, etc.
+        setPostToEdit(post);
+        setIsEditModalOpen(true);
     };
+
 
     const handleDelete = (post: Post, e: React.MouseEvent) => {
         e.stopPropagation();
@@ -133,18 +138,17 @@ export default function Post({showOurBlogActions = false}: PostProps) {
                 className="bg-white flex-1 rounded-lg shadow-sm overflow-auto
                    [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
             >
-                {posts.map((post) => (
+                {posts.map((post: any) => (
                     <article
                         key={post.id}
-                        className="p-4 border-b cursor-pointer"
-                        onClick={() => handleClick(post)}
+                        className="p-4 border-b"
                     >
                         {/* Conditionally show Edit/Delete if showAdminActions = true */}
                         {showOurBlogActions && (
                             <div className="flex justify-end items-center space-x-2">
-                                <BorderColorOutlined className="text-green-300"
+                                <BorderColorOutlined className="text-green-300 cursor-pointer"
                                                      onClick={(e) => handleEdit(post, e)}/>
-                                <DeleteOutlined className="text-green-300"
+                                <DeleteOutlined className="text-green-300 cursor-pointer"
                                                 onClick={(e) => handleDelete(post, e)}/>
                             </div>
                         )}
@@ -170,7 +174,8 @@ export default function Post({showOurBlogActions = false}: PostProps) {
                         <p className="text-sm text-black mb-2">{post.excerpt}</p>
 
                         {/* Comments */}
-                        <div className="flex items-center justify-between text-gray-300">
+                        <div className="flex items-center justify-between text-gray-300 cursor-pointer"
+                             onClick={() => handleClick(post)}>
                             <div className="flex items-center">
                                 <ChatBubbleOutlineRounded className="mr-2"/>
                                 {post.commentsCount} Comments
@@ -180,14 +185,29 @@ export default function Post({showOurBlogActions = false}: PostProps) {
                 ))}
             </div>
 
-            {/* Create Post Modal */}
-            <CreatePostModal
+            {/* Create Post Modal (for creating new posts) */}
+            <PostModal
                 isOpen={isCreateModalOpen}
                 onClose={() => setIsCreateModalOpen(false)}
                 onSuccess={() => {
                     fetchPosts();
                 }}
             />
+
+            {/* Edit Post Modal (for editing an existing post) */}
+            {postToEdit && (
+                <PostModal
+                    isOpen={isEditModalOpen}
+                    onClose={() => {
+                        setIsEditModalOpen(false);
+                        setPostToEdit(null);
+                    }}
+                    onSuccess={() => {
+                        fetchPosts();
+                    }}
+                    initialData={postToEdit}
+                />
+            )}
         </div>
     );
 }

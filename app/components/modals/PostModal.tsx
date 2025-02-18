@@ -1,32 +1,42 @@
+"use client";
+
 import {Close as CloseIcon} from "@mui/icons-material";
-import {useState} from "react";
+import {useState, useEffect} from "react";
 import {ApiClient} from "@/api/client";
 import {API} from "@/constants/constants";
 import {CreatePostCommunityDropdown} from "@/components/common/CreatePostCommunityDropdown";
 import {PostType} from "@/app/types/post";
 
-interface CreatePostModalProps {
+export type PostModalProps = {
     isOpen: boolean;
     onClose: () => void;
     /**
-     * onSuccess is called after successfully creating a post
+     * onSuccess is called after successfully creating or updating a post
      * and fetching its updated details.
      */
     onSuccess: (updatedPost: PostType) => void;
-}
+    /**
+     * If provided, the modal works in edit mode and initializes fields with this data.
+     * If not provided, the modal works in create mode.
+     */
+    initialData?: PostType;
+};
 
-export function CreatePostModal({
-                                    isOpen,
-                                    onClose,
-                                    onSuccess,
-                                }: CreatePostModalProps) {
-    const [title, setTitle] = useState("");
-    const [content, setContent] = useState("");
-    const [category, setCategory] = useState("");
+export function PostModal({isOpen, onClose, onSuccess, initialData}: PostModalProps) {
+    const [title, setTitle] = useState(initialData?.title || "");
+    const [content, setContent] = useState(initialData?.content || "");
+    const [category, setCategory] = useState(initialData?.category || "");
+
+    // When the modal opens (or initialData changes), update our state.
+    useEffect(() => {
+        setTitle(initialData?.title || "");
+        setContent(initialData?.content || "");
+        setCategory(initialData?.category || "");
+    }, [initialData, isOpen]);
 
     const handleSubmit = async () => {
         try {
-            // Retrieve userProfile from localStorage and parse it.
+            // Retrieve userProfile from localStorage
             const storedProfile = localStorage.getItem("userProfile");
             if (!storedProfile) {
                 throw new Error("User profile not found in localStorage");
@@ -36,26 +46,32 @@ export function CreatePostModal({
 
             const api = ApiClient.getInstance();
 
-            // Create the post with the required request body format.
-            const createdPost = await api.post<PostType>(API.posts, {
-                title,
-                content,
-                category,
-                authorId,
-            });
-
-
-            // Ensure createdPost has an id
-            if (!createdPost?.id) {
-                throw new Error("No 'id' found in createdPost. Check API response.");
+            let createdOrUpdatedPost: any;
+            if (initialData) {
+                // Edit mode: update the post using PUT
+                createdOrUpdatedPost = await api.put(`${API.posts}/${initialData.id}`, {
+                    title,
+                    content,
+                    category,
+                    authorId,
+                });
+            } else {
+                // Create mode: create a new post using POST
+                createdOrUpdatedPost = await api.post(API.posts, {
+                    title,
+                    content,
+                    category,
+                    authorId,
+                });
             }
 
-            // 3. Fetch updated post details
-            const updatedPost = await api.get<PostType>(
-                `${API.posts}/${createdPost.id}/details`
-            );
+            // Check that the response has an id
+            if (!createdOrUpdatedPost?.id) {
+                throw new Error("No 'id' found in response. Check API response.");
+            }
 
-            // Call onSuccess with the updated post
+            // Fetch updated post details (common for both modes)
+            const updatedPost: PostType = await api.get(`${API.posts}/${createdOrUpdatedPost.id}/details`);
             onSuccess(updatedPost);
 
             // Reset the form and close modal
@@ -64,7 +80,7 @@ export function CreatePostModal({
             setCategory("");
             onClose();
         } catch (error) {
-            console.error("Error creating post:", error);
+            console.error("Error submitting post:", error);
         }
     };
 
@@ -78,7 +94,9 @@ export function CreatePostModal({
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg w-full max-w-lg mx-4">
                 <div className="flex justify-between items-center p-4">
-                    <h2 className="text-lg font-semibold text-[#101828]">Create Post</h2>
+                    <h2 className="text-lg font-semibold text-[#101828]">
+                        {initialData ? "Edit Post" : "Create Post"}
+                    </h2>
                     <button onClick={onClose} className="text-gray-500">
                         <CloseIcon/>
                     </button>
@@ -86,7 +104,8 @@ export function CreatePostModal({
 
                 <div className="p-4 space-y-4">
                     <div className="md:w-3/6">
-                        <CreatePostCommunityDropdown onCategorySelect={handleCategorySelect}/>
+                        <CreatePostCommunityDropdown onCategorySelect={handleCategorySelect}
+                                                     initialCategory={category} />
                     </div>
                     <input
                         type="text"
@@ -114,7 +133,7 @@ export function CreatePostModal({
                             onClick={handleSubmit}
                             className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 w-[105px]"
                         >
-                            Post
+                            {initialData ? "Save" : "Post"}
                         </button>
                     </div>
                 </div>
