@@ -7,6 +7,7 @@ import {
 } from "@mui/icons-material";
 import {ApiClient} from "@/api/client";
 import {API} from "@/constants/constants";
+import {usePathname} from "next/navigation";
 
 export const Sidebar = ({isOpen, onClose}: {
     isOpen: boolean;
@@ -15,6 +16,8 @@ export const Sidebar = ({isOpen, onClose}: {
     function logout() {
         ApiClient.getInstance().post(API.logout, {})
     }
+
+    const pathname = usePathname();
 
     return (
         <>
@@ -47,18 +50,22 @@ export const Sidebar = ({isOpen, onClose}: {
                                 <li>
                                     <Link
                                         href="/"
-                                        className="flex items-center space-x-2 text-white"
+                                        className={`flex items-center space-x-2 ${
+                                            pathname === "/" ? "font-bold text-white" : "text-gray-100"
+                                        }`}
                                     >
-                                        <HomeOutlined className="h-5 w-5"/>
+                                        <HomeOutlined className="h-5 w-5" />
                                         <span>Home</span>
                                     </Link>
                                 </li>
                                 <li>
                                     <Link
                                         href="/our-blog"
-                                        className="flex items-center space-x-2 text-white"
+                                        className={`flex items-center space-x-2 ${
+                                            pathname === "/our-blog" ? "font-bold text-white" : "text-gray-100"
+                                        }`}
                                     >
-                                        <ArticleOutlined className="h-5 w-5"/>
+                                        <ArticleOutlined className="h-5 w-5" />
                                         <span>Our Blog</span>
                                     </Link>
                                 </li>
@@ -91,18 +98,22 @@ export const Sidebar = ({isOpen, onClose}: {
                             <li>
                                 <Link
                                     href="/"
-                                    className="flex items-center space-x-2 text-gray-700 hover:text-gray-900"
+                                    className={`flex items-center space-x-2 text-gray-700 hover:text-gray-900 ${
+                                        pathname === "/" ? "font-bold" : ""
+                                    }`}
                                 >
-                                    <HomeOutlined className="h-4 w-4"/>
+                                    <HomeOutlined className="h-4 w-4" />
                                     <span>Home</span>
                                 </Link>
                             </li>
                             <li>
                                 <Link
                                     href="/our-blog"
-                                    className="flex items-center space-x-2 text-gray-700 hover:text-gray-900"
+                                    className={`flex items-center space-x-2 text-gray-700 hover:text-gray-900 ${
+                                        pathname === "/our-blog" ? "font-bold" : ""
+                                    }`}
                                 >
-                                    <ArticleOutlined className="h-4 w-4"/>
+                                    <ArticleOutlined className="h-4 w-4" />
                                     <span>Our Blog</span>
                                 </Link>
                             </li>
