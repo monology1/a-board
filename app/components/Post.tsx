@@ -10,6 +10,7 @@ import {useRouter} from "next/navigation";
 import {BorderColorOutlined, ChatBubbleOutlineRounded, DeleteOutlined} from "@mui/icons-material";
 import {PostModal} from "@/components/modals/PostModal";
 import {PostType} from "@/app/types/post";
+import {DeletePostModal} from "@/components/common/DeletePostModal";
 
 interface Post {
     id: number;
@@ -45,9 +46,17 @@ function highlightMatch(text: string, query: string) {
 
 export default function Post({showOurBlogActions = false}: PostProps) {
     const router = useRouter();
+
+    // CREATE
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+
+    // EDIT
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [postToEdit, setPostToEdit] = useState<PostType | null>(null);
+
+    // DELETE
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [postToDelete, setPostToDelete] = useState<Post | null>(null);
 
     const [posts, setPosts] = useState<Post[]>([]);
     const [loading, setLoading] = useState(true);
@@ -70,9 +79,6 @@ export default function Post({showOurBlogActions = false}: PostProps) {
             }
 
             const api = ApiClient.getInstance();
-            // If using Axios:
-            // const { data } = await api.get<Post[]>(url);
-            // setPosts(data);
             const response: any = await api.get(url);
             setPosts(response);
         } catch (error) {
@@ -103,7 +109,7 @@ export default function Post({showOurBlogActions = false}: PostProps) {
         router.push(`/post/${post.id}`);
     };
 
-    // (Optional) If you want to show edit/delete in “Our Blog”:
+    // EDIT
     const handleEdit = (post: PostType, e: React.MouseEvent) => {
         e.stopPropagation();
         console.log("Edit post:", post.id);
@@ -111,13 +117,15 @@ export default function Post({showOurBlogActions = false}: PostProps) {
         setIsEditModalOpen(true);
     };
 
-
+    // DELETE
     const handleDelete = (post: Post, e: React.MouseEvent) => {
         e.stopPropagation();
         console.log("Delete post:", post.id);
-        // Call your delete API, then refetch
+        setPostToDelete(post);
+        setIsDeleteModalOpen(true);
     };
 
+    // If still loading data
     if (loading) {
         return <div>Loading...</div>;
     }
@@ -143,13 +151,17 @@ export default function Post({showOurBlogActions = false}: PostProps) {
                         key={post.id}
                         className="p-4 border-b"
                     >
-                        {/* Conditionally show Edit/Delete if showAdminActions = true */}
+                        {/* Conditionally show Edit/Delete if showOurBlogActions = true */}
                         {showOurBlogActions && (
                             <div className="flex justify-end items-center space-x-2">
-                                <BorderColorOutlined className="text-green-300 cursor-pointer"
-                                                     onClick={(e) => handleEdit(post, e)}/>
-                                <DeleteOutlined className="text-green-300 cursor-pointer"
-                                                onClick={(e) => handleDelete(post, e)}/>
+                                <BorderColorOutlined
+                                    className="text-green-300 cursor-pointer"
+                                    onClick={(e) => handleEdit(post, e)}
+                                />
+                                <DeleteOutlined
+                                    className="text-green-300 cursor-pointer"
+                                    onClick={(e) => handleDelete(post, e)}
+                                />
                             </div>
                         )}
                         {/* Author and Avatar */}
@@ -174,8 +186,10 @@ export default function Post({showOurBlogActions = false}: PostProps) {
                         <p className="text-sm text-black mb-2">{post.excerpt}</p>
 
                         {/* Comments */}
-                        <div className="flex items-center justify-between text-gray-300 cursor-pointer"
-                             onClick={() => handleClick(post)}>
+                        <div
+                            className="flex items-center justify-between text-gray-300 cursor-pointer"
+                            onClick={() => handleClick(post)}
+                        >
                             <div className="flex items-center">
                                 <ChatBubbleOutlineRounded className="mr-2"/>
                                 {post.commentsCount} Comments
@@ -208,6 +222,20 @@ export default function Post({showOurBlogActions = false}: PostProps) {
                     initialData={postToEdit}
                 />
             )}
+
+            {/* Delete Post Modal */}
+            <DeletePostModal
+                isOpen={isDeleteModalOpen}
+                onClose={() => {
+                    setIsDeleteModalOpen(false);
+                    setPostToDelete(null);
+                }}
+                postId={postToDelete?.id || null}
+                onSuccess={() => {
+                    // Once deletion is successful, refresh the post list
+                    fetchPosts();
+                }}
+            />
         </div>
     );
 }

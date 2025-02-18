@@ -23,7 +23,7 @@ export const SearchBar = ({ onSearch }: SearchBarProps) => {
             </div>
             <input
                 type="text"
-                placeholder="Search by author"
+                placeholder="Search by title"
                 className="w-full border border-green-100 bg-gray-100/50 rounded-md py-2 pl-10 pr-4 text-gray-700 placeholder-gray-500"
                 value={value}
                 onChange={handleChange}
